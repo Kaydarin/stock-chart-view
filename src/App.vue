@@ -7,8 +7,16 @@
           <b-row>
             <b-col cols="2" class="menus">
               <b-nav vertical>
-                <b-nav-item class="menu-item" active>MSFT</b-nav-item>
-                <b-nav-item class="menu-item">AAPL</b-nav-item>
+                <b-nav-item
+                  class="menu-item"
+                  to="/chart/msft"
+                  :active="$route.path === '/chart/msft'"
+                >MSFT</b-nav-item>
+                <b-nav-item
+                  class="menu-item"
+                  to="/chart/aapl"
+                  :active="$route.path === '/chart/aapl'"
+                >AAPL</b-nav-item>
                 <b-nav-item class="menu-item">INTC</b-nav-item>
                 <b-nav-item class="menu-item">NFLX</b-nav-item>
                 <b-nav-item class="menu-item">ORCL</b-nav-item>
@@ -20,7 +28,9 @@
                 <b-nav-item class="menu-item">AMZN</b-nav-item>
               </b-nav>
             </b-col>
-            <b-col cols="10">Content</b-col>
+            <b-col cols="10">
+              <router-view />
+            </b-col>
           </b-row>
         </b-col>
         <b-col cols="12" class="content-footer">Footer</b-col>
@@ -29,10 +39,17 @@
     <!-- <div id="nav">
       <router-link to="/">Home</router-link>|
       <router-link to="/about">About</router-link>
-    </div>
-    <router-view />-->
+    </div>-->
   </div>
 </template>
+
+<script>
+export default {
+  mounted() {
+    console.log(this.$route);
+  }
+};
+</script>
 
 <style lang="scss">
 #app {
