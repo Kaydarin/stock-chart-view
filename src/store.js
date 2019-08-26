@@ -6,6 +6,9 @@ import _ from 'lodash';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  /*
+    -- State
+  */
   state: {
     ohlcmeta: {
       symbol: '',
@@ -15,6 +18,10 @@ export default new Vuex.Store({
       data: []
     }
   },
+
+  /*
+    -- Getters
+  */
   getters: {
     getStockMetaData(state) {
       return state.ohlcmeta;
@@ -23,6 +30,10 @@ export default new Vuex.Store({
       return state.ohlc;
     }
   },
+
+  /*
+    -- Mutations
+  */
   mutations: {
     resetState(state) {
       state.ohlcmeta.symbol = '';
@@ -33,9 +44,11 @@ export default new Vuex.Store({
       let stockData = payload.data;
       let newStockData = [];
 
+      // Reformat data
       _.map(stockData, function(datas, index) {
         let newObj = {};
 
+        // Assign new formatted object data
         _.assign(newObj, {
           x: new Date(index),
           y: [
@@ -46,26 +59,37 @@ export default new Vuex.Store({
           ]
         });
 
+        // Push to collection
         newStockData.push(newObj);
       });
 
+      // Set to global state
       state.ohlcmeta.symbol = payload.metadata['2. Symbol'];
       state.ohlcmeta.timezone = payload.metadata['4. Time Zone'];
       state.ohlc.data = newStockData;
     }
   },
+
+  /*
+    -- Actions
+  */
   actions: {
     readStockData: async function({ commit }, payload) {
+      // Clear all existing related state data
       commit({
         type: 'resetState'
       });
 
+      // Capitalize stock symbol
       const symbol = payload.symbol.toUpperCase();
+
+      // Set API key
       const apiKey = 'MS3E5Y15GTHZNZUF';
 
       let period;
       let periodObj;
 
+      // Map timeframe selection
       switch (payload.period) {
         case 'daily':
           period = 'TIME_SERIES_DAILY';
@@ -82,22 +106,29 @@ export default new Vuex.Store({
       }
 
       try {
+        // Call API
         const successReponse = await axios.get(
           `https://www.alphavantage.co/query?function=${period}&symbol=${symbol}&apikey=${apiKey}`
         );
 
+        // If 'Note' data object exists (Indicator of max API call reached)
+        // return partial error
         if (successReponse.data['Note']) {
           return false;
         }
 
+        // Mutate the retrived data
+        // and set to global state
         commit({
           type: 'setStockData',
           metadata: successReponse.data['Meta Data'],
           data: successReponse.data[periodObj]
         });
+
+        // Return success response
         return successReponse;
       } catch (error) {
-        // console.log(error.response);
+        // Return error response
         return error.response;
       }
     }

@@ -1,7 +1,9 @@
 <template>
   <div>
+    <!-- Titles -->
     <h1>{{ $route.params.id.toUpperCase() }}</h1>
     <h4>{{ capitalize(timeframe) }}</h4>
+    <!-- Main Chart -->
     <apexchart
       type="candlestick"
       height="450"
@@ -9,11 +11,13 @@
       :series="series"
       v-if="loaded === true"
     />
+    <!-- Chart Time Frame Toggle -->
     <b-button-group>
       <b-button v-on:click="retrieveData('daily')">Daily</b-button>
       <b-button v-on:click="retrieveData('weekly')">Weekly</b-button>
       <b-button v-on:click="retrieveData('monthly')">Monthly</b-button>
     </b-button-group>
+    <!-- Toast Message Prompt -->
     <b-toast
       id="max-api-toast"
       class="max-api-toast-message"
@@ -93,44 +97,64 @@ export default {
   methods: {
     ...mapActions(["readStockData"]),
 
+    /*
+      -- Retrieve data on API call
+    */
     retrieveData: async function(timeframe) {
+      // Set data loaded to false
       this.loaded = false;
+
+      // Set selected timeframe (daily, weekly, monthly)
       this.timeframe = timeframe;
 
+      // Get stock data from API call
       const stockDataResponse = await this.readStockData({
         symbol: this.$route.params.id,
         period: timeframe
       });
 
+      // If API call is in max count,
+      // show message
       if (stockDataResponse === false) {
         this.$bvToast.show("max-api-toast");
         this.countDown();
       }
 
+      // Map global state data to local state
       const stateStockData = await this.getStockData;
-
       this.series[0] = stateStockData;
 
+      // Set data loaded to true
       this.loaded = true;
     },
 
+    /*
+      -- Max API message countdown
+    */
     countDown() {
+      // Set initial seconds
       let maxSecs = 60;
-
       this.initialCountDownSecs = maxSecs;
+
+      // Set initial countdown seconds
       this.countDownSecs = maxSecs;
 
       const self = this;
 
+      // Countdown
       var downloadTimer = setInterval(function() {
         self.countDownSecs -= 1;
 
+        // If countdown reaches 0, stop countdown
         if (self.countDownSecs <= 0) {
           clearInterval(downloadTimer);
         }
       }, 1000);
     },
 
+    /*
+      -- Text capitalize function
+    */
     capitalize(text) {
       return _.capitalize(text);
     }
