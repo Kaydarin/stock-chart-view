@@ -2,9 +2,11 @@
   <div id="app">
     <b-container fluid>
       <b-row class="content-container">
+        <!-- Header -->
         <b-col cols="12" class="content-header">Header</b-col>
         <b-col cols="12" class="content-middle">
           <b-row>
+            <!-- Left Menus -->
             <b-col cols="2" class="menus">
               <b-nav vertical>
                 <b-nav-item
@@ -64,18 +66,16 @@
                 >AMZN</b-nav-item>
               </b-nav>
             </b-col>
+            <!-- Chart Views -->
             <b-col cols="10">
               <router-view :key="$route.path" />
             </b-col>
           </b-row>
         </b-col>
+        <!-- Footer -->
         <b-col cols="12" class="content-footer">Footer</b-col>
       </b-row>
     </b-container>
-    <!-- <div id="nav">
-      <router-link to="/">Home</router-link>|
-      <router-link to="/about">About</router-link>
-    </div>-->
   </div>
 </template>
 
